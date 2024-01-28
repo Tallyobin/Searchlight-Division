@@ -3,7 +3,7 @@ Performance and abilities of disk input/output (I/O) operation depends on severa
 
 (a) In disk scheduling, performances among various scheduling policies varies due to difference of value for seek time. What does seek time means? **[1 mark]** <br>
 
-Seek time refers to the time it takes for the disk arm to position the read/write heads at the desired track on the disk. It is a crucial factor in disk I/O performance, as minimizing seek time contributes to faster and more efficient disk operations.
+The time it takes to position the head at the track
 
 <br>
 
@@ -59,12 +59,12 @@ Scheduling is one of the key that leads to multiprogramming on OS environment. T
 
 (b) Fill in the table accordingly on the specific types of scheduling based on the explanation. **[2 marks]**
 
-| Types of Scheduling        | Explanation                                         |
-|----------------------------|-----------------------------------------------------|
-| Long-Term Scheduling       | Involves selecting processes from the job pool and loading them into memory for execution. Decides which programs are admitted to the system for processing.|
-| Medium-Term Scheduling     | Involves swapping processes in and out of main memory to manage the degree of multiprogramming. Decides which processes are to be swapped in and out. |
-| Short-Term Scheduling      | Involves selecting a process from the ready queue and allocating the CPU to that process. Decides which process will execute next.|
-| I/O Scheduling             | Involves deciding the order in which I/O requests are processed. Manages the input and output operations of processes.|
+| Types of Scheduling        | Explanation                                                                                         |
+|----------------------------|-----------------------------------------------------------------------------------------------------|
+| Long-Term Scheduling       | The decision to add to the pool of processes to be executed.                                        |
+| Medium-Term Scheduling     | The decision to add to the number of processes that are partially or fully in main memory.          |
+| Short-Term Scheduling      | The decision as to which available process will be executed by the processor.                       |
+| I/O Scheduling             | The decision as to which process’s pending I/O request shall be handled by an available I/O device. |
 
 Table 1 – Scheduling type
 
@@ -74,8 +74,8 @@ Table 1 – Scheduling type
 
 i. There are **TWO (2)** decision modes commonly used on uniprocessors’ scheduling. Name both of them. **[2 marks]** <br>
 
-   1. **Non-Preemptive Scheduling**
-   2. **Preemptive Scheduling**
+   1. **Nonpreemptive**
+   2. **Preemptive**
 
 <br>
 
@@ -93,18 +93,38 @@ Table 2 - Set of Processes
 
 <br>
 
-| Time  | Process | Execution |
-|-------|---------|-----------|
-| 0     | -       | -         |
-| 1     | J       |           |
-| 2     | K       |           |
-| 4     | J       |           |
-| 6     | L       |           |
-| 9     | N       |           |
-| 13    | M       |           |
-| 19    | -       | -         |
+| J | K | L | M | N |
+|---|---|---|---|---|
 
-Average Waiting Time (AWT):
+1   5   7   10  16  20
+
+
+at T5 = K & L have arrived
+
+```
+RRK = ((5 - 2) + 2) / 2
+    = (3 + 2) / 2
+    = 5 / 2
+    = 2.5
+
+RRL = ((5 - 5) + 3) / 3
+    = 3 / 3
+    = 1
+```
+    
+at T10 = M & N have arrived
+
+```
+RRM = ((10 - 8) + 6) / 6
+    = (2 + 6) / 6
+    = 8 / 6
+    = 1.33
+
+RRN = ((10 - 9) + 4) / 4
+    = (1 + 4) / 4
+    = 5 / 4
+    = 1.25
+```
 
 <br><br>
 
@@ -154,35 +174,51 @@ Figure 2
 
 (i) Find the Need Matrix **[1 mark]** <br>
 
-The Need Matrix is calculated as the difference between the Max Matrix and the Allocation Matrix.
+The Need Matrix is calculated as the difference between the Max Matrix and the Allocation Matrix.<br>
 
+Need = Max - Allocation<br>
 
+```
+| 1 | 2 | 3 | 4 |   | 1 | 1 | 1 | 1 |
+|---|---|---|---|   |---|---|---|---|
+| 2 | 2 | 5 | 1 | - | 1 | 2 | 3 | 1 |
+| 2 | 1 | 2 | 1 |   | 2 | 0 | 2 | 1 |
+| 4 | 3 | 1 | 2 |   | 3 | 2 | 1 | 1 |
+```
+
+<br>
+
+```
+| 0 | 1 | 2 | 3 |
+|---|---|---|---|
+| 1 | 0 | 2 | 0 |
+| 0 | 1 | 0 | 0 |
+| 1 | 1 | 0 | 1 |
+```
 
 <br>
 
 (ii) Is the system state is in currently safe or unsafe state? Show your working steps / calculation and justify your answer. **[3 marks]** <br>
 
-To determine if the system is in a safe state, the Banker's algorithm can be applied.
+| 0 | 1 | 0 | 1 |
+|---|---|---|---|
 
-1. **Work Vector:** Initialize the Work vector with the Available vector.
+Available Vector
 
-2. **Finish Vector:** Initialize the Finish vector with all zeros.
+<br>
 
-3. **Find a process i where Finish[i] = 0 and Need[i] <= Work.**
+| 0 | 1 | 2 | 3 |
+|---|---|---|---|
+| 1 | 0 | 2 | 0 |
+| 0 | 1 | 0 | 0 |
+| 1 | 1 | 0 | 1 |
 
-   - Initial process: Process 1 (since Need[1] = [0, 0, 1, 0] and Need[1] <= Work).
+Need Matrix
 
-4. **Work = Work + Allocation[i], Finish[i] = 1**
+<br>
 
-   - For Process 1: Work = [1, 2, 4, 4], Finish = [1, 0, 0, 0]
-
-5. Repeat steps 3-4 until all processes are marked as finished or no process can be executed.
-
-   - Process 2: Work = [2, 2, 7, 5], Finish = [1, 1, 0, 0]
-   - Process 3: Work = [3, 3, 8, 6], Finish = [1, 1, 1, 0]
-   - Process 4: Work = [7, 6, 9, 8], Finish = [1, 1, 1, 1]
-
-The system is in a safe state since all processes can finish. The sequence is 1, 2, 3, 4. Therefore, the system is currently in a safe state.
+For process P0, Need = (0, 1, 2, 3) and Available = (0, 1, 0, 1)<br>
+Need <= Available = False
 
 <br><br>
 
@@ -190,16 +226,16 @@ The system is in a safe state since all processes can finish. The sequence is 1,
 
 (a) State **ONE (1)** example of human readable and **ONE (1)** example of machine readable I/O device. **[3 marks]** <br>
 
-- **Human Readable I/O Device Example:** Printer
-- **Machine Readable I/O Device Example:** Magnetic Stripe Reader
+- **Human Readable I/O Device Example:** Keyboard
+- **Machine Readable I/O Device Example:** Controllers
 
 <br>
 
 (b) There are **THREE (3)** main techniques for performing I/O process. List all of them. **[3 marks]** <br>
 
-1. **Programmed I/O:** The processor issues an I/O command, and the process waits for the operation to be completed before proceeding.
-2. **Interrupt-driven I/O:** The processor issues an I/O command, and depending on whether it's blocking or non-blocking, it either continues executing instructions or is blocked, allowing the operating system to schedule another process.
-3. **Direct Memory Access (DMA):** A DMA module controls the data exchange between main memory and an I/O module. It allows data to be sent directly from an attached peripheral device to the memory on the computer's motherboard, freeing the processor from direct involvement in the data transfer.
+1. **Programmed I/O**
+2. **Interrupt-driven I/O**
+3. **Direct memory access (DMA)**
 
 <br><br>
 
@@ -212,37 +248,7 @@ Requirements: Processes needs to have 3 different resources before it can be exe
 
 Draw a Resource Allocation Graph that represents information shown above. **[10 marks]** <br>
 
-To represent the deadlock scenario using a resource allocation graph, we'll follow the given information:
-
-Processes: PA, PB, PC, PD
-Resources: R1 (3 units), R2 (2 units), R3 (2 units), R4 (3 units)
-Requirements: Processes need to have 3 different resources before they can be executed/completed.
-
-Let's draw the resource allocation graph:
-
-```
-          R1 (3)
-         /   \
-       PA     PB
-        |
-       R2 (2)
-        |
-       PC
-        |
-       R3 (2)
-        |
-       PD
-        |
-       R4 (3)
-```
-
-In this graph:
-- PA and PB are competing for R1.
-- PC is waiting for R2, and PD is waiting for R3.
-- PA and PB are holding R2 and R3, respectively.
-- PD is holding R4.
-
-This configuration leads to a circular wait condition, one of the necessary conditions for a deadlock. If all the processes hold the resources they have and wait for the resources they need, a deadlock occurs.
+![Screenshot_170](https://github.com/Tallyobin/Searchlight-Division/assets/156051265/678b1105-ede9-4bf1-bead-d12a62f975e8)
 
 <br><br>
 
@@ -252,7 +258,7 @@ This configuration leads to a circular wait condition, one of the necessary cond
 
 (i) What do you understand on the concept of partitioning? **[1 mark]** <br>
 
-Memory partitioning is a memory management technique where the primary memory (RAM) is divided into fixed-size or variable-size partitions. Each partition may contain one process, and multiple processes can be loaded into memory simultaneously, with each occupying its own partition.
+**Partitioning is an early method of managing memory.**
 
 <br>
 
@@ -261,16 +267,16 @@ Memory partitioning is a memory management technique where the primary memory (R
 1. **Internal Fragmentation:**
    - Occurs when memory allocated to a process is larger than the actual memory required.
    - The unused memory within a partition is wasted.
-   - More common in fixed-size partitioning.
+   - More common in Fixed Partitioning.
 
 2. **External Fragmentation:**
    - Occurs when free memory blocks are scattered throughout the memory, but the total free space is sufficient to satisfy a request.
    - Leads to inefficient use of memory.
-   - More common in variable-size partitioning.
+   - More common in Dynamic Partitioning.
 
 Differences:
    - Internal fragmentation is caused by the allocated memory being larger than needed, while external fragmentation is caused by scattered free memory blocks.
-   - Internal fragmentation is inherent to fixed-size partitioning, while external fragmentation is more prominent in variable-size partitioning.
+   - Internal fragmentation is inherent to Fixed Partitioning, while external fragmentation is more prominent in Dynamic Partitioning.
 
 <br>
 
@@ -278,8 +284,8 @@ Differences:
 
 (i) Name **TWO (2)** algorithms that are commonly used in page replacement policy. **[2 marks]** <br>
 
-1. **Optimal Page Replacement Algorithm**
-2. **Least Recently Used (LRU) Algorithm**
+1. **Optimal**
+2. **Least recently used (LRU)**
 
 <br>
 
@@ -287,20 +293,7 @@ Differences:
 Resident Set = 3 frames, Page address stream: - | 2 | 3 | 4 | 2 | 1 | 3 | 7 | 5 | 4 | 3 |<br>
 By using any **ONE (1)** of the algorithms mentioned in Question (b) (i), draw a table that shows the page placement correctly. **[5 marks]** <br>
 
-| Reference | Page Frames | Page Fault | Page Placement               |
-|-----------|-------------|------------|-----------------------------|
-| 2         | _ _ _       | Yes        | 2 _ _                       |
-| 3         | 2 _ _       | Yes        | 2 3 _                       |
-| 4         | 2 3 _       | Yes        | 2 3 4                       |
-| 2         | 2 3 4       | No         | (No page fault, page 2 was already in memory) |
-| 1         | 2 3 4       | Yes        | 1 3 4                       |
-| 3         | 1 3 4       | Yes        | 1 3 4                       |
-| 7         | 1 3 7       | Yes        | 1 3 7                       |
-| 5         | 5 3 7       | Yes        | 5 3 7                       |
-| 4         | 5 4 7       | Yes        | 5 4 7                       |
-| 3         | 5 4 3       | Yes        | 5 4 3                       |
 
-This is a simplified example, and the actual page placement depends on the specific implementation details of the LRU algorithm.
 
 <br><br>
 
@@ -310,25 +303,22 @@ program that switches the processor from one process to another.<br>
 
 (a) Define what is x. **[1 mark]** <br>
 
-   - **Definition:** Context switching is a mechanism performed by the operating system, and x is often used to represent a special program or part of the operating system responsible for switching the processor from one process to another. During context switching, the current state of a process is saved, and the saved state of the next process in the queue is restored.
+**x is a Dispatcher**
 
 <br>
 
 (b) For all processes, there are **TWO (2)** main model that explains the states of processes. Name both models accordingly. **[2 marks]** <br>
 
-   1. **Sequential Process Model:** In this model, a process goes through a sequence of states from its creation to termination. The states include new, ready, running, waiting, and terminated. The transition between these states follows a linear progression.
-   2. **State Diagram Model:** This model represents the different states a process can be in and the events or conditions triggering transitions between states. It provides a visual representation of the life cycle of a process.
+   1. **TWO-STATE PROCESS MODEL**
+   2. **FIVE-STATE PROCESS MODEL**
 
 <br>
 
 (c) Process termination stops and halts processes from executing properly. Provide **THREE (3)** reasons that leads to process termination. **[3 marks]** <br>
 
-   1. **Normal Completion:**
-      A process completes its execution and terminates voluntarily.
-   2. **Fatal Error:**
-      The process encounters a critical error or exception that cannot be handled, leading to termination.
-   3. **Parent Process Termination:**
-      If a process is a child process and its parent process terminates, the operating system may terminate the child processes associated with the parent.
+   1. **Normal completion**
+   2. **Arithmetic error**
+   3. **Parent termination**
 
 <br>
 
@@ -342,12 +332,9 @@ program that switches the processor from one process to another.<br>
 
 (a) Input / output (I/O) buffering possesses two main problems; user may hung up waiting for completion of I/O process, and the buffer itself may interfere with operating system swapping decision. In order to fix this, there are **THREE (3)** types of I/O buffering could be attempted by operating system. Name all of them. **[3 marks]** <br>
 
-   1. **Single Buffering:**
-      Involves using a single buffer for I/O operations. The process waits for the I/O operation to complete before proceeding, which can lead to inefficiency.
-   2. **Double Buffering:**
-      Utilizes two buffers, allowing the process to transfer data to or from one buffer while the operating system empties or fills the other buffer. This helps overcome the waiting issue.
-   3. **Circular Buffering:**
-      Involves using more than two buffers arranged in a circular manner. Each individual buffer acts as one unit in the circular buffer, providing a continuous cycle for I/O operations.
+   1. **Single Buffer**
+   2. **Double Buffer**
+   3. **Circular Buffer**
 
 <br>
 
@@ -366,15 +353,3 @@ bottom of y-axis = 199<br>
 top of y-axis = 0<br>
 
 x-axis = Time
-
-<br>
-
-- C-Scan (Circular SCAN) is an algorithm that moves the disk arm in a circular manner in one direction, servicing requests until reaching the last track, then quickly moving back to the beginning.
-- Given the head's initial position at Track 100 and the disk track requests: 56, 58, 39, 18, 89, 159, 38, 185, with head movement in the decreasing direction, the C-Scan movement can be represented as follows:
-
-   ```
-   185      159     100     89      58      56      39      38      18
-   |--------|-------|------|------|------|------|------|------|------|
-   ```
-
-- The head starts at Track 100, moves towards Track 185, then quickly moves back to Track 18, following the circular pattern. This approach helps optimize the disk I/O performance.
